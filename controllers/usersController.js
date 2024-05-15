@@ -31,7 +31,21 @@ const login = async (req, res) => {
   }
 };
 
-const checkEmail = (req, res) => {};
+// 이메일 중복확인
+const checkEmail = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const result = await userService.checkEmail(email);
+    res.status(StatusCodes.OK).json(result);
+  } catch (err) {
+    res.status(err.statusCode || 500).json({
+      isSuccess: false,
+      message: err.message,
+    });
+  }
+};
+
 const findPw = (req, res) => {};
 const resetPw = (req, res) => {};
 const deleteAccount = (req, res) => {};

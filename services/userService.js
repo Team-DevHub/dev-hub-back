@@ -69,4 +69,28 @@ const login = async (email, password) => {
   }
 };
 
-module.exports = { join, login };
+// 이메일 중복확인
+const checkEmail = async (email) => {
+  try {
+    const result = await conn.query(userQuery.checkEmail, email);
+    const { count } = result[0][0];
+
+    if (count) {
+      return {
+        isSuccess: true,
+        result: false,
+        message: "이미 사용 중인 이메일입니다.",
+      };
+    } else {
+      return {
+        isSuccess: true,
+        result: true,
+        message: "사용 가능한 이메일입니다.",
+      };
+    }
+  } catch (err) {
+    throw err;
+  }
+};
+
+module.exports = { join, login, checkEmail };
