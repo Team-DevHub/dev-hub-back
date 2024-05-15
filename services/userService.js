@@ -33,42 +33,37 @@ const join = async (nickname, email, password) => {
 
 const login = async (email, password) => {
   try {
-    conn.query(userQuery.getUserByEmail, email, (err, results) => {
-      // 에러인 경우
-      if (err) {
-        throw new CustomError(StatusCodes.INTERNAL_SERVER_ERROR, err.message);
-      }
+    const userResult = await conn.query(userQuery.getUserByEmail, email);
+    const userData = userResult[0][0];
 
-      // 비밀번호 암호화
-      const loginUser = results[0];
-      const hashPassword = crypto
-        .pbkdf2Sync(password, loginUser.salt, 10000, 10, "sha512")
-        .toString("base64");
+    // 비밀번호 암호화
+    const hashPassword = crypto
+      .pbkdf2Sync(password, userData.salt, 10000, 32, "sha512")
+      .toString("base64");
 
-      // 비밀번호 검증
-      if (loginUser && loginUser.password == hashPassword) {
-        const token = jwt.sign(
-          {
-            userId: loginUser.id,
-          },
-          process.env.JWT_KEY,
-          {
-            expiresIn: "14d",
-          }
-        );
+    // 비밀번호 검증
+    if (userData && userData.password == hashPassword) {
+      const token = jwt.sign(
+        {
+          userId: userData.id,
+        },
+        process.env.JWT_KEY,
+        {
+          expiresIn: "14d",
+        }
+      );
 
-        return {
-          isSuccess: true,
-          message: "로그인 성공",
-          accessToken: token,
-        };
-      } else {
-        throw new CustomError(
-          StatusCodes.UNAUTHORIZED,
-          "이메일 또는 비밀번호를 다시 확인해주세요"
-        );
-      }
-    });
+      return {
+        isSuccess: true,
+        message: "로그인 성공",
+        accessToken: token,
+      };
+    } else {
+      throw new CustomError(
+        StatusCodes.UNAUTHORIZED,
+        "이메일 또는 비밀번호를 다시 확인해주세요"
+      );
+    }
   } catch (err) {
     throw err;
   }
