@@ -6,6 +6,7 @@ const crypto = require("crypto");
 const userQuery = require("../queries/userQuery");
 const CustomError = require("../utils/CustomError");
 const { v4: uuidv4 } = require("uuid");
+const { createAccessToken } = require("../utils/verifyToken");
 
 const join = async (nickname, email, password) => {
   // password 암호화
@@ -43,15 +44,7 @@ const login = async (email, password) => {
 
     // 비밀번호 검증
     if (userData && userData.password == hashPassword) {
-      const token = jwt.sign(
-        {
-          userId: userData.id,
-        },
-        process.env.JWT_KEY,
-        {
-          expiresIn: "14d",
-        }
-      );
+      const token = createAccessToken(userData.id);
 
       return {
         isSuccess: true,
@@ -93,4 +86,34 @@ const checkEmail = async (email) => {
   }
 };
 
-module.exports = { join, login, checkEmail };
+// 유저 프로필 조회 API
+const getUser = async (userId) => {
+  try {
+    // 유저 데이터 조회
+    const result = await conn.query(userQuery.getUserById, userId);
+    const userData = result[0][0];
+    console.log(result[0][0]);
+
+    if (userData) {
+      // post 개수 조회
+      const postResult = await conn.query(userQuery.getTotalPosts, userId);
+      const { count } = postResult[0][0];
+
+      return {
+        isSuccess: true,
+        message: "조회 성공",
+        result: {
+          userId: userData.id,
+          nickname: userData.name,
+          level: userData.level,
+          totalPosts: count,
+          totalPoints: userData.points,
+        },
+      };
+    }
+  } catch (err) {
+    throw err;
+  }
+};
+
+module.exports = { join, login, checkEmail, getUser };

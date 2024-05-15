@@ -1,5 +1,6 @@
 const { StatusCodes } = require("http-status-codes"); // status code module
 const userService = require("../services/userService");
+const { verifyAccessToken } = require("../utils/verifyToken");
 
 // 회원가입
 const join = async (req, res) => {
@@ -46,10 +47,27 @@ const checkEmail = async (req, res) => {
   }
 };
 
+// 유저 프로필 조회 API
+const getUser = async (req, res) => {
+  try {
+    const token = req.headers["authorization"].split(" ")[1];
+    const verifyResult = verifyAccessToken(token);
+
+    if (verifyResult) {
+      const result = await userService.getUser(verifyResult.userId);
+      res.status(StatusCodes.OK).json(result);
+    }
+  } catch (err) {
+    res.status(err.statusCode || 500).json({
+      isSuccess: false,
+      message: err.message,
+    });
+  }
+};
+
 const findPw = (req, res) => {};
 const resetPw = (req, res) => {};
 const deleteAccount = (req, res) => {};
-const getUser = (req, res) => {};
 const getTopFive = (req, res) => {};
 
 module.exports = {
