@@ -2,17 +2,22 @@ require("dotenv").config();
 const conn = require("../database/mysql");
 const { StatusCodes } = require("http-status-codes");
 const jwt = require("jsonwebtoken");
-const cryto = require("crypto");
+const crypto = require("crypto");
 const userQuery = require("../queries/userQuery");
 const CustomError = require("../utils/CustomError");
+const { v4: uuidv4 } = require("uuid");
 
 const join = async (nickname, email, password) => {
-  const salt = cryto.randomBytes(64).toString("base64");
-  const hashPassword = cryto
-    .pbkdf2Sync(password, salt, 10000, 10, 64, "sha512")
+  // password 암호화
+  const salt = crypto.randomBytes(32).toString("base64");
+  const hashPassword = crypto
+    .pbkdf2Sync(password, salt, 10000, 32, "sha512")
     .toString("base64");
 
-  let values = [nickname, email, hashPassword, salt];
+  // id 생성
+  const userId = uuidv4();
+
+  let values = [userId, nickname, email, hashPassword, salt];
 
   try {
     await conn.query(userQuery.join, values);
