@@ -116,4 +116,18 @@ const getUser = async (userId) => {
   }
 };
 
-module.exports = { join, login, checkEmail, getUser };
+// 회원 탈퇴
+const deleteAccount = async (userId) => {
+  try {
+    await conn.query(userQuery.deleteUser, userId);
+
+    return {
+      isSuccess: true,
+      message: "회원탈퇴 성공",
+    };
+  } catch (err) {
+    throw err;
+  }
+};
+
+module.exports = { join, login, checkEmail, getUser, deleteAccount };
