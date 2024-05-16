@@ -5,7 +5,6 @@ const tokenValidation = () =>
   header("authorization")
     .trim()
     .notEmpty()
-    .isJWT()
     .withMessage("요청 값을 다시 확인해주세요.");
 
 /* ----- user 유효성 검사 ----- */
