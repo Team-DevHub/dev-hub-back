@@ -83,7 +83,6 @@ const getUser = async (userId) => {
     // 유저 데이터 조회
     const result = await conn.query(userQuery.getUserById, userId);
     const userData = result[0][0];
-    console.log(result[0][0]);
 
     if (userData) {
       // post 개수 조회
@@ -101,6 +100,11 @@ const getUser = async (userId) => {
           totalPoints: userData.points,
         },
       };
+    } else {
+      throw new CustomError(
+        StatusCodes.NOT_FOUND,
+        "유저 정보가 존재하지 않습니다."
+      );
     }
   } catch (err) {
     throw err;
