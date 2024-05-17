@@ -1,24 +1,17 @@
 require("dotenv").config();
 const conn = require("../database/mysql");
 const { StatusCodes } = require("http-status-codes");
-const jwt = require("jsonwebtoken");
-const crypto = require("crypto");
 const userQuery = require("../queries/userQuery");
 const CustomError = require("../utils/CustomError");
 const { v4: uuidv4 } = require("uuid");
 const { createAccessToken } = require("../utils/verifyToken");
+const { getHashPassword } = require("../utils/getHashPassword");
 
 const join = async (nickname, email, password) => {
-  // password 암호화
-  const salt = crypto.randomBytes(32).toString("base64");
-  const hashPassword = crypto
-    .pbkdf2Sync(password, salt, 10000, 32, "sha512")
-    .toString("base64");
+  const pw = getHashPassword(password); // password 암호화
+  const userId = uuidv4(); // id 생성
 
-  // id 생성
-  const userId = uuidv4();
-
-  let values = [userId, nickname, email, hashPassword, salt];
+  let values = [userId, nickname, email, pw.hashPassword, pw.salt];
 
   try {
     await conn.query(userQuery.join, values);
@@ -38,12 +31,10 @@ const login = async (email, password) => {
     const userData = userResult[0][0];
 
     // 비밀번호 암호화
-    const hashPassword = crypto
-      .pbkdf2Sync(password, userData.salt, 10000, 32, "sha512")
-      .toString("base64");
+    const pw = getHashPassword(password, userData.salt);
 
     // 비밀번호 검증
-    if (userData && userData.password == hashPassword) {
+    if (userData && userData.password == pw.hashPassword) {
       const token = createAccessToken(userData.id);
 
       return {
@@ -92,7 +83,6 @@ const getUser = async (userId) => {
     // 유저 데이터 조회
     const result = await conn.query(userQuery.getUserById, userId);
     const userData = result[0][0];
-    console.log(result[0][0]);
 
     if (userData) {
       // post 개수 조회
@@ -110,6 +100,11 @@ const getUser = async (userId) => {
           totalPoints: userData.points,
         },
       };
+    } else {
+      throw new CustomError(
+        StatusCodes.NOT_FOUND,
+        "유저 정보가 존재하지 않습니다."
+      );
     }
   } catch (err) {
     throw err;
