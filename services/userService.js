@@ -7,6 +7,7 @@ const { v4: uuidv4 } = require("uuid");
 const { createAccessToken } = require("../utils/verifyToken");
 const { getHashPassword } = require("../utils/getHashPassword");
 
+/* ----- 회원가입 ----- */
 const join = async (nickname, email, password) => {
   const pw = getHashPassword(password); // password 암호화
   const userId = uuidv4(); // id 생성
@@ -25,6 +26,7 @@ const join = async (nickname, email, password) => {
   }
 };
 
+/* ----- 로그인 ----- */
 const login = async (email, password) => {
   try {
     const userResult = await conn.query(userQuery.getUserByEmail, email);
@@ -53,7 +55,7 @@ const login = async (email, password) => {
   }
 };
 
-// 이메일 중복확인
+/* ----- 이메일 중복 확인 ----- */
 const checkEmail = async (email) => {
   try {
     const result = await conn.query(userQuery.checkEmail, email);
@@ -77,7 +79,7 @@ const checkEmail = async (email) => {
   }
 };
 
-// 유저 프로필 조회 API
+/* ----- 유저 프로필 조회 ----- */
 const getUser = async (userId) => {
   try {
     // 유저 데이터 조회
@@ -111,7 +113,7 @@ const getUser = async (userId) => {
   }
 };
 
-// 회원 탈퇴
+/* ----- 회원 탈퇴 ----- */
 const deleteAccount = async (userId) => {
   try {
     await conn.query(userQuery.deleteUser, userId);
@@ -125,6 +127,7 @@ const deleteAccount = async (userId) => {
   }
 };
 
+/* ----- 비밀번호 찾기 ----- */
 const findPw = async (name, email) => {
   try {
     const result = await conn.query(userQuery.getName, email);
@@ -143,6 +146,7 @@ const findPw = async (name, email) => {
   }
 };
 
+/* ----- 비밀번호 재설정 ----- */
 const resetPw = async (email, password) => {
   try {
     const { hashPassword, salt } = getHashPassword(password);
