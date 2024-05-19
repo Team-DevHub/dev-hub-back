@@ -126,7 +126,24 @@ const findPw = [
   },
 ];
 
-const resetPw = (req, res) => {};
+const resetPw = [
+  valid.emailValidation(),
+  valid.passwordValidation(),
+  valid.validationCheck,
+  async (req, res) => {
+    try {
+      const { email, password } = req.body;
+
+      const result = await userService.resetPw(email, password);
+      res.status(StatusCodes.OK).json(result);
+    } catch (err) {
+      res.status(err.statusCode || 500).json({
+        isSuccess: false,
+        message: err.message,
+      });
+    }
+  },
+];
 
 const getTopFive = (req, res) => {};
 

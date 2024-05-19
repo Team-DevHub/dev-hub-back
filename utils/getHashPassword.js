@@ -11,7 +11,7 @@ exports.getHashPassword = (password, salt) => {
 
     return { hashPassword, salt };
   }
-  // 회원가입 - 비밀번호 암호화 시
+  // 회원가입, 비밀번호 찾기 - 비밀번호 암호화 시
   else {
     const hashPassword = crypto
       .pbkdf2Sync(password, defaultSalt, 10000, 32, "sha512")

@@ -143,4 +143,37 @@ const findPw = async (name, email) => {
   }
 };
 
-module.exports = { join, login, checkEmail, getUser, deleteAccount, findPw };
+const resetPw = async (email, password) => {
+  try {
+    const { hashPassword, salt } = getHashPassword(password);
+    const result = await conn.query(userQuery.resetPassword, [
+      hashPassword,
+      salt,
+      email,
+    ]);
+
+    if (result[0].affectedRows > 0) {
+      return {
+        isSuccess: true,
+        message: "비밀번호 재설정 완료",
+      };
+    } else {
+      throw new CustomError(
+        StatusCodes.FORBIDDEN,
+        "요청 값을 다시 확인해주세요"
+      );
+    }
+  } catch (err) {
+    throw err;
+  }
+};
+
+module.exports = {
+  join,
+  login,
+  checkEmail,
+  getUser,
+  deleteAccount,
+  findPw,
+  resetPw,
+};
