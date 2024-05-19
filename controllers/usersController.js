@@ -2,6 +2,7 @@ const { StatusCodes } = require("http-status-codes"); // status code module
 const userService = require("../services/userService");
 const { verifyAccessToken } = require("../utils/verifyToken");
 const valid = require("../utils/validation");
+const { getUserInfo } = require("../utils/getUserInfo");
 
 // 회원가입
 const join = [
@@ -145,7 +146,26 @@ const resetPw = [
   },
 ];
 
-const getTopFive = (req, res) => {};
+const getTopFive = [
+  valid.tokenValidation(),
+  valid.validationCheck,
+  async (req, res) => {
+    try {
+      const token = req.headers["authorization"].split(" ")[1];
+      const verifyResult = verifyAccessToken(token);
+
+      if (verifyResult) {
+        const result = await getUserInfo();
+        res.status(StatusCodes.OK).json(result);
+      }
+    } catch (err) {
+      res.status(err.statusCode || 500).json({
+        isSuccess: false,
+        message: err.message,
+      });
+    }
+  },
+];
 
 module.exports = {
   join,
