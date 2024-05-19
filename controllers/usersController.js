@@ -107,8 +107,27 @@ const deleteAccount = [
   },
 ];
 
-const findPw = (req, res) => {};
+const findPw = [
+  valid.nameValidation(),
+  valid.emailValidation(),
+  valid.validationCheck,
+  async (req, res) => {
+    try {
+      const { nickname, email } = req.body;
+
+      const result = await userService.findPw(nickname, email);
+      res.status(StatusCodes.OK).json(result);
+    } catch (err) {
+      res.status(err.statusCode || 500).json({
+        isSuccess: false,
+        message: err.message,
+      });
+    }
+  },
+];
+
 const resetPw = (req, res) => {};
+
 const getTopFive = (req, res) => {};
 
 module.exports = {

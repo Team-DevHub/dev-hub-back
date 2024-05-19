@@ -125,4 +125,22 @@ const deleteAccount = async (userId) => {
   }
 };
 
-module.exports = { join, login, checkEmail, getUser, deleteAccount };
+const findPw = async (name, email) => {
+  try {
+    const result = await conn.query(userQuery.getName, email);
+    const userData = result[0][0];
+
+    if (userData.name === name) {
+      return {
+        isSuccess: true,
+        message: "비밀번호 재설정 가능",
+      };
+    } else {
+      throw new CustomError(StatusCodes.FORBIDDEN, "비밀번호 재설정 불가능");
+    }
+  } catch (err) {
+    throw err;
+  }
+};
+
+module.exports = { join, login, checkEmail, getUser, deleteAccount, findPw };
