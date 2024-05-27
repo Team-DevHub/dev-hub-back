@@ -2,6 +2,7 @@ const { StatusCodes } = require("http-status-codes");
 const postService = require("../services/postService");
 const { verifyAccessToken } = require("../utils/verifyToken");
 const valid = require("../utils/validation");
+const postQuery = require("../queries/postQuery");
 
 // 게시글 작성
 const writePost = [
@@ -48,14 +49,43 @@ const getPosts = [
         const { userId } = verifyResult;
         const { limit, page, myPage, search, categoryId } = req.query;
 
-        const result = await postService.getPosts(
-          userId,
-          parseInt(limit),
-          parseInt(page),
-          myPage === "true",
-          search,
-          categoryId
-        );
+        const offset = (page - 1) * limit;
+        let query = "";
+        let params = [];
+
+        // 마이페이지인 경우
+        if (myPage === "true") {
+          query = postQuery.getPosts;
+          params.push(userId);
+        } else {
+          query = postQuery.getAllPosts;
+        }
+
+        // 게시글 검색인 경우
+        if (search) {
+          if (query.includes("WHERE")) {
+            query += " AND title LIKE ?";
+          } else {
+            query += " WHERE title LIKE ?";
+          }
+          params.push(`%${search}%`);
+        }
+
+        // 카테고리별 조회인 경우
+        if (categoryId) {
+          if (query.includes("WHERE")) {
+            query += " AND category_id = ?";
+          } else {
+            query += " WHERE category_id = ?";
+          }
+          params.push(parseInt(categoryId));
+        }
+
+        // 페이지네이션 적용
+        query += postQuery.limitOffset;
+        params.push(parseInt(limit), offset);
+
+        const result = await postService.getPosts(query, params);
 
         res.status(StatusCodes.OK).json(result);
       }

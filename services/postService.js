@@ -26,40 +26,8 @@ const writePost = async (writerId, categoryId, title, content, links) => {
   }
 };
 
-const getPosts = async (userId, limit, page, myPage, search, categoryId) => {
+const getPosts = async (query, params) => {
   try {
-    // 페이지네이션
-    const offset = (page - 1) * limit;
-
-    let query;
-    let params = [];
-
-    // 마이페이지인 경우
-    if (myPage) {
-      query = postQuery.getPosts;
-      params = [userId];
-    } else {
-      query = postQuery.getAllPosts;
-    }
-
-    // 게시글 검색인 경우
-    if (search) {
-      query = postQuery.getPostsBySearch;
-      params.push(`%${search}%`);
-    }
-
-    // 카테고리별 조회인 경우
-    if (categoryId) {
-      query = postQuery.getPostsByCategory;
-      params.push(parseInt(categoryId));
-    }
-
-    // 페이지네이션 적용
-    query += postQuery.limitOffset;
-    params.push(limit, offset);
-
-    console.log(query);
-
     const result = await conn.query(query, params);
     const postDataList = result[0];
 
