@@ -2,6 +2,7 @@ const { StatusCodes } = require("http-status-codes"); // status code module
 const commentService = require("../services/commentService");
 const { verifyAccessToken } = require("../utils/verifyToken");
 const valid = require("../utils/validation");
+const { getCommentsFromPost } = require("../utils/getComments");
 
 // 댓글 작성
 const writeComment = [
@@ -60,7 +61,21 @@ const deleteComment = [
 ];
 
 // 댓글 조회
-const getComments = (req, res) => {};
+const getComments = [
+  async (req, res) => {
+    const { postId } = req.params;
+
+    try {
+      const result = await getCommentsFromPost(postId);
+      res.status(StatusCodes.OK).json(result);
+    } catch (err) {
+      res.status(err.statusCode || 400).json({
+        isSuccess: false,
+        message: err.message,
+      });
+    }
+  },
+];
 
 module.exports = {
   writeComment,
