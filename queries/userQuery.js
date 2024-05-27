@@ -4,3 +4,7 @@ exports.checkEmail = `SELECT COUNT(*) as count FROM users WHERE email = ?`;
 exports.getUserById = `SELECT * FROM users WHERE id = ?`;
 exports.getTotalPosts = `SELECT COUNT(*) as count FROM posts WHERE writer_id = ?`;
 exports.deleteUser = `DELETE FROM users WHERE id = ?`;
+exports.getName = `SELECT name, email FROM users WHERE email = ?`;
+exports.resetPassword = `UPDATE users SET password = ?, salt = ? WHERE email = ?`;
+exports.getUserInfo = `SELECT id, name, level FROM users WHERE id = ?`;
+exports.getTopFive = `SELECT id, name, level, points FROM users ORDER BY points DESC LIMIT 5`;
