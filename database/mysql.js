@@ -2,11 +2,11 @@ require("dotenv").config();
 const mysql = require("mysql2/promise");
 
 const conn = mysql.createPool({
-  host: "dev-hub.c1ym8qg2aidm.ap-northeast-2.rds.amazonaws.com",
+  host: process.env.DB_HOST,
   port: process.env.DB_PORT,
-  user: "admin",
-  password: "devhub1234",
-  database: "DevHub",
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
   dateStrings: true,
 });
 
