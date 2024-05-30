@@ -4,6 +4,7 @@ const postQuery = require("../queries/postQuery");
 const { StatusCodes } = require("http-status-codes");
 const CustomError = require("../utils/CustomError");
 const { param } = require("express-validator");
+const { getUserInfo } = require("../utils/getUserInfo");
 
 const writePost = async (writerId, categoryId, title, content, links) => {
   let values = [writerId, categoryId, title, content];
@@ -36,11 +37,7 @@ const getPosts = async (query, params) => {
 
       for (const postData of postDataList) {
         // 게시글 작성자 조회
-        const postWriterResult = await conn.query(
-          postQuery.getPostWriterById,
-          postData.writer_id
-        );
-        const { name } = postWriterResult[0][0];
+        const { name } = await getUserInfo(postData.writer_id);
 
         // 댓글 개수 조회
         const getTotalCommentsResult = await conn.query(
@@ -100,20 +97,13 @@ const getPostDetail = async (postId) => {
     // 댓글 작성자 조회
     const commentList = [];
     for (const comment of comments) {
-      const commetWriterResult = await conn.query(
-        postQuery.getUserById,
-        comment.writer_id
-      );
-      const commentWriterData = commetWriterResult[0][0];
+      const commentWriter = await getUserInfo(comment.writer_id);
+
       const commentInfo = {
         commnetId: comment.id,
         content: comment.content,
         createdAt: comment.created_at,
-        writer: {
-          userId: commentWriterData.id,
-          nickname: commentWriterData.name,
-          level: commentWriterData.level,
-        },
+        writer: commentWriter,
       };
 
       commentList.push(commentInfo);
@@ -123,11 +113,8 @@ const getPostDetail = async (postId) => {
     const linksResult = await conn.query(postQuery.getLinksByPostId, postId);
     const links = linksResult[0].map((link) => link.link);
 
-    const writerResult = await conn.query(
-      postQuery.getUserById,
-      postData.writer_id
-    );
-    const writerData = writerResult[0][0];
+    // 게시글 작성자
+    const postWriter = await getUserInfo(postData.writer_id);
 
     // 게시글 상세 조회
     const postInfo = {
@@ -139,11 +126,7 @@ const getPostDetail = async (postId) => {
       totalComments: comments.length,
       createdAt: postData.created_at,
       comments: commentList,
-      writer: {
-        userId: writerData.id,
-        nickname: writerData.name,
-        level: writerData.level,
-      },
+      writer: postWriter,
     };
 
     return {
