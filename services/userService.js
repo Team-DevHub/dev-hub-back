@@ -54,6 +54,7 @@ const login = async (email, password) => {
         isSuccess: true,
         message: "로그인 성공",
         accessToken: token,
+        userId: userData.id,
       };
     } else {
       throw new CustomError(
