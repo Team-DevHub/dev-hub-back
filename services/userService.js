@@ -9,12 +9,23 @@ const { getHashPassword } = require("../utils/getHashPassword");
 
 /* ----- 회원가입 ----- */
 const join = async (nickname, email, password) => {
-  const pw = getHashPassword(password); // password 암호화
-  const userId = uuidv4(); // id 생성
-
-  let values = [userId, nickname, email, pw.hashPassword, pw.salt];
-
   try {
+    // 이메일 중복 확인
+    const emailResult = await conn.query(userQuery.getUserByEmail, email);
+    const user = emailResult[0][0];
+
+    if (user) {
+      throw new CustomError(
+        StatusCodes.BAD_REQUEST,
+        "이미 사용 중인 이메일입니다."
+      );
+    }
+
+    const pw = getHashPassword(password); // password 암호화
+    const userId = uuidv4(); // id 생성
+
+    let values = [userId, nickname, email, pw.hashPassword, pw.salt];
+
     await conn.query(userQuery.join, values);
 
     return {
@@ -43,6 +54,7 @@ const login = async (email, password) => {
         isSuccess: true,
         message: "로그인 성공",
         accessToken: token,
+        userId: userData.id,
       };
     } else {
       throw new CustomError(
