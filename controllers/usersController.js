@@ -150,17 +150,10 @@ const resetPw = [
 
 /* ----- Top5 수강생 조회 ----- */
 const getTopFive = [
-  valid.tokenValidation(),
-  valid.validationCheck,
   async (req, res) => {
     try {
-      const token = req.headers["authorization"].split(" ")[1];
-      const verifyResult = verifyAccessToken(token);
-
-      if (verifyResult) {
-        const result = await getUserInfo();
-        res.status(StatusCodes.OK).json(result);
-      }
+      const result = await getUserInfo();
+      res.status(StatusCodes.OK).json(result);
     } catch (err) {
       res.status(err.statusCode || 500).json({
         isSuccess: false,
