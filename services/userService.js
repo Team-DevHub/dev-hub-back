@@ -150,11 +150,9 @@ const findPw = async (name, email) => {
         isSuccess: true,
         message: "비밀번호 재설정 가능",
       };
-    } else {
-      throw new CustomError(StatusCodes.FORBIDDEN, "비밀번호 재설정 불가능");
     }
   } catch (err) {
-    throw err;
+    throw new CustomError(StatusCodes.FORBIDDEN, "비밀번호 재설정 불가능");
   }
 };
 
