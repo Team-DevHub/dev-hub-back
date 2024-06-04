@@ -38,57 +38,62 @@ const writePost = [
 
 // 게시글 조회
 const getPosts = [
-  valid.tokenValidation(),
-  valid.validationCheck,
   async (req, res) => {
     try {
-      const token = req.headers["authorization"].split(" ")[1];
-      const verifyResult = verifyAccessToken(token);
+      const { limit, page, myPage, search, categoryId } = req.query;
+      let userId = null;
 
-      if (verifyResult) {
-        const { userId } = verifyResult;
-        const { limit, page, myPage, search, categoryId } = req.query;
+      // 마이페이지인 경우
+      if (myPage === "true") {
+        const token = req.headers["authorization"]?.split(" ")[1];
 
-        const offset = (page - 1) * limit;
-        let query = "";
-        let params = [];
+        if (token) {
+          const verifyResult = verifyAccessToken(token);
 
-        // 마이페이지인 경우
-        if (myPage === "true") {
-          query = postQuery.getPosts;
-          params.push(userId);
-        } else {
-          query = postQuery.getAllPosts;
-        }
-
-        // 게시글 검색인 경우
-        if (search) {
-          if (query.includes("WHERE")) {
-            query += " AND title LIKE ?";
-          } else {
-            query += " WHERE title LIKE ?";
+          if (verifyResult) {
+            userId = verifyResult.userId;
           }
-          params.push(`%${search}%`);
         }
-
-        // 카테고리별 조회인 경우
-        if (categoryId) {
-          if (query.includes("WHERE")) {
-            query += " AND category_id = ?";
-          } else {
-            query += " WHERE category_id = ?";
-          }
-          params.push(parseInt(categoryId));
-        }
-
-        // 페이지네이션 적용
-        query += postQuery.limitOffset;
-        params.push(parseInt(limit), offset);
-
-        const result = await postService.getPosts(query, params);
-
-        res.status(StatusCodes.OK).json(result);
       }
+
+      const offset = (page - 1) * limit;
+      let query = "";
+      let params = [];
+
+      if (myPage === "true" && userId) {
+        query = postQuery.getPosts;
+        params.push(userId);
+      } else {
+        query = postQuery.getAllPosts;
+      }
+
+      // 게시글 검색인 경우
+      if (search) {
+        if (query.includes("WHERE")) {
+          query += " AND title LIKE ?";
+        } else {
+          query += " WHERE title LIKE ?";
+        }
+        params.push(`%${search}%`);
+      }
+
+      // 카테고리별 조회인 경우
+      if (categoryId) {
+        if (query.includes("WHERE")) {
+          query += " AND category_id = ?";
+        } else {
+          query += " WHERE category_id = ?";
+        }
+        params.push(parseInt(categoryId));
+      }
+
+      // 페이지네이션 적용
+      query += postQuery.limitOffset;
+      params.push(parseInt(limit), offset);
+
+      const result = await postService.getPosts(query, params);
+
+      res.status(StatusCodes.OK).json(result);
     } catch (err) {
       res.status(err.statusCode || 400).json({
         isSuccess: false,
@@ -100,19 +105,12 @@ const getPosts = [
 
 // 게시글 상세 조회
 const getPostDetail = [
-  valid.tokenValidation(),
-  valid.validationCheck,
   async (req, res) => {
     const { postId } = req.params;
 
     try {
-      const token = req.headers["authorization"].split(" ")[1];
-      const verifyResult = verifyAccessToken(token);
-
-      if (verifyResult) {
-        const result = await postService.getPostDetail(postId);
-        res.status(StatusCodes.OK).json(result);
-      }
+      const result = await postService.getPostDetail(postId);
+      res.status(StatusCodes.OK).json(result);
     } catch (err) {
       res.status(err.statusCode || 400).json({
         isSuccess: false,
