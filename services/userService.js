@@ -109,6 +109,8 @@ const getUser = async (userId) => {
         result: {
           userId: userData.id,
           nickname: userData.name,
+          email: userData.email,
+          joinDate: userData.created_at.split(" ")[0],
           level: userData.level,
           totalPosts: count,
           totalPoints: userData.points,
