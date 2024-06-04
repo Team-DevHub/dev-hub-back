@@ -91,6 +91,30 @@ const checkEmail = async (email) => {
   }
 };
 
+/* ----- 닉네임 중복 확인 ----- */
+const checkNickname = async (nickname) => {
+  try {
+    const result = await conn.query(userQuery.checkNickname, nickname);
+    const { count } = result[0][0];
+
+    if (count) {
+      return {
+        isSuccess: true,
+        result: false,
+        message: "이미 사용 중인 닉네임입니다.",
+      };
+    } else {
+      return {
+        isSuccess: true,
+        result: true,
+        message: "사용 가능한 닉네임입니다.",
+      };
+    }
+  } catch (err) {
+    throw err;
+  }
+};
+
 /* ----- 유저 프로필 조회 ----- */
 const getUser = async (userId) => {
   try {
@@ -192,4 +216,5 @@ module.exports = {
   deleteAccount,
   findPw,
   resetPw,
+  checkNickname,
 };
