@@ -7,6 +7,10 @@ const postQuery = require("../queries/postQuery");
 // 게시글 작성
 const writePost = [
   valid.tokenValidation(),
+  valid.categoryIdValidation(),
+  valid.titleValidation(),
+  valid.contentValidation(),
+  valid.linksValidation(),
   valid.validationCheck,
   async (req, res) => {
     const { categoryId, title, content, links } = req.body;
@@ -38,6 +42,8 @@ const writePost = [
 
 // 게시글 조회
 const getPosts = [
+  valid.postQueryValidation(),
+  valid.validationCheck,
   async (req, res) => {
     try {
       const { limit, page, myPage, search, categoryId } = req.query;
@@ -105,6 +111,8 @@ const getPosts = [
 
 // 게시글 상세 조회
 const getPostDetail = [
+  valid.postIdValidation(),
+  valid.validationCheck,
   async (req, res) => {
     const { postId } = req.params;
 
@@ -123,6 +131,7 @@ const getPostDetail = [
 // 게시글 삭제
 const deletePost = [
   valid.tokenValidation(),
+  valid.postIdValidation(),
   valid.validationCheck,
   async (req, res) => {
     const { postId } = req.params;
