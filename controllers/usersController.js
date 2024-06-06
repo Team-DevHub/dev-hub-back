@@ -64,6 +64,25 @@ const checkEmail = [
   },
 ];
 
+/* ----- 닉네임 중복 확인 ----- */
+const checkNickname = [
+  valid.nameValidation(),
+  valid.validationCheck,
+  async (req, res) => {
+    const { nickname } = req.body;
+
+    try {
+      const result = await userService.checkNickname(nickname);
+      res.status(StatusCodes.OK).json(result);
+    } catch (err) {
+      res.status(err.statusCode || 500).json({
+        isSuccess: false,
+        message: err.message,
+      });
+    }
+  },
+];
+
 /* ----- 유저 프로필 조회 ----- */
 const getUser = [
   valid.tokenValidation(),
@@ -172,4 +191,5 @@ module.exports = {
   deleteAccount,
   getUser,
   getTopFive,
+  checkNickname,
 };
