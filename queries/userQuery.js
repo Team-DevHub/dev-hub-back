@@ -8,4 +8,7 @@ exports.getName = `SELECT name, email FROM users WHERE email = ?`;
 exports.resetPassword = `UPDATE users SET password = ?, salt = ? WHERE email = ?`;
 exports.getUserInfo = `SELECT id, name, level FROM users WHERE id = ?`;
 exports.getTopFive = `SELECT id, name, level, points FROM users ORDER BY points DESC LIMIT 5`;
+exports.updatePoints = `UPDATE users SET points = points + ? WHERE id = ?`;
+exports.updateLevel = `UPDATE users SET level = ? WHERE id = ?`;
+exports.getPointsById = `SELECT points FROM users WHERE id = ?`;
 exports.checkNickname = `SELECT COUNT(*) as count FROM users WHERE name = ?`;
