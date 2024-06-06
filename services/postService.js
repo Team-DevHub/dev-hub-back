@@ -1,10 +1,12 @@
 require("dotenv").config();
 const conn = require("../database/mysql");
 const postQuery = require("../queries/postQuery");
+const userQuery = require("../queries/userQuery");
 const { StatusCodes } = require("http-status-codes");
 const CustomError = require("../utils/CustomError");
 const { param } = require("express-validator");
 const { getUserInfo } = require("../utils/getUserInfo");
+const { updatePointsAndLevel } = require("../utils/updateLevel");
 
 const writePost = async (writerId, categoryId, title, content, links) => {
   let values = [writerId, categoryId, title, content];
@@ -17,6 +19,9 @@ const writePost = async (writerId, categoryId, title, content, links) => {
       const linkValues = links.map((link) => [postResult[0].insertId, link]);
       await conn.query(postQuery.writeLinks, [linkValues]);
     }
+
+    // 포인트 추가
+    await updatePointsAndLevel(writerId, 8);
 
     return {
       isSuccess: true,
@@ -142,6 +147,9 @@ const getPostDetail = async (postId) => {
 const deletePost = async (userId, postId) => {
   try {
     await conn.query(postQuery.deletePost, [userId, postId]);
+
+    // 포인트 차감
+    await updatePointsAndLevel(userId, -8);
 
     return {
       isSuccess: true,
