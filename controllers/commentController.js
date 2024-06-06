@@ -7,6 +7,8 @@ const { getCommentsFromPost } = require("../utils/getComments");
 // 댓글 작성
 const writeComment = [
   valid.tokenValidation(),
+  valid.commentPostIdValidation(),
+  valid.contentValidation(),
   valid.validationCheck,
   async (req, res) => {
     const { postId, content } = req.body;
@@ -37,6 +39,7 @@ const writeComment = [
 // 댓글 삭제
 const deleteComment = [
   valid.tokenValidation(),
+  valid.commentIdValidation(),
   valid.validationCheck,
   async (req, res) => {
     const { commentId } = req.body;
@@ -62,6 +65,8 @@ const deleteComment = [
 
 // 댓글 조회
 const getComments = [
+  valid.postIdValidation(),
+  valid.validationCheck,
   async (req, res) => {
     const { postId } = req.params;
 

@@ -15,7 +15,6 @@ exports.getCommentsFromPost = async (postId) => {
         comment.writer_id
       );
 
-      console.log(writer);
       const { id, name, level } = writer[0];
 
       commentsData.push({
