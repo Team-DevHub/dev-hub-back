@@ -65,10 +65,14 @@ const getPosts = [
       const offset = (page - 1) * limit;
       let query = "";
       let params = [];
+      let countQuery = postQuery.countQuery;
+      let countParams = [];
 
       if (myPage === "true" && userId) {
         query = postQuery.getPosts;
         params.push(userId);
+        countQuery += " WHERE writer_id = ?";
+        countParams.push(userId);
       } else {
         query = postQuery.getAllPosts;
       }
@@ -77,27 +81,39 @@ const getPosts = [
       if (search) {
         if (query.includes("WHERE")) {
           query += " AND title LIKE ?";
+          countQuery += " AND title LIKE ?";
         } else {
           query += " WHERE title LIKE ?";
+          countQuery += " WHERE title LIKE ?";
         }
         params.push(`%${search}%`);
+        countParams.push(`%${search}%`);
       }
 
       // 카테고리별 조회인 경우
       if (categoryId) {
         if (query.includes("WHERE")) {
           query += " AND category_id = ?";
+          countQuery += " AND category_id = ?";
         } else {
           query += " WHERE category_id = ?";
+          countQuery += " WHERE category_id = ?";
         }
         params.push(parseInt(categoryId));
+        countParams.push(parseInt(categoryId));
       }
 
       // 페이지네이션 적용
       query += postQuery.limitOffset;
       params.push(parseInt(limit), offset);
 
-      const result = await postService.getPosts(query, params);
+      const result = await postService.getPosts(
+        query,
+        params,
+        countQuery,
+        countParams,
+        page
+      );
 
       res.status(StatusCodes.OK).json(result);
     } catch (err) {

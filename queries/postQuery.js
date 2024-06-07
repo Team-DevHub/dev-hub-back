@@ -12,3 +12,4 @@ exports.getPostById = `SELECT * FROM posts WHERE id = ?`;
 exports.getCommentsByPostId = `SELECT * FROM comments WHERE post_id = ?`;
 exports.getUserById = `SELECT * FROM users WHERE id = ?`;
 exports.getLinksByPostId = `SELECT * FROM links WHERE post_id =?`;
+exports.countQuery = `SELECT COUNT(*) AS total FROM posts`;
