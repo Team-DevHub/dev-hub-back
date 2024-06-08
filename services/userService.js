@@ -178,7 +178,7 @@ const findPw = async (name, email) => {
     const result = await conn.query(userQuery.getName, email);
     const userData = result[0][0];
 
-    if (userData.name === name) {
+    if (userData && userData.name === name) {
       return {
         isSuccess: true,
         message: "비밀번호 재설정 가능",
