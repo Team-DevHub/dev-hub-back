@@ -43,6 +43,13 @@ const login = async (email, password) => {
     const userResult = await conn.query(userQuery.getUserByEmail, email);
     const userData = userResult[0][0];
 
+    if (!userData) {
+      throw new CustomError(
+        StatusCodes.UNAUTHORIZED,
+        "이메일 또는 비밀번호를 다시 확인해주세요"
+      );
+    }
+
     // 비밀번호 암호화
     const pw = getHashPassword(password, userData.salt);
 
@@ -171,7 +178,7 @@ const findPw = async (name, email) => {
     const result = await conn.query(userQuery.getName, email);
     const userData = result[0][0];
 
-    if (userData.name === name) {
+    if (userData && userData.name === name) {
       return {
         isSuccess: true,
         message: "비밀번호 재설정 가능",
