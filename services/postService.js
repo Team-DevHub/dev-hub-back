@@ -113,10 +113,14 @@ const getPostDetail = async (postId) => {
       const commentWriter = await getUserInfo(comment.writer_id);
 
       const commentInfo = {
-        commnetId: comment.id,
+        commentId: comment.id,
         content: comment.content,
         createdAt: comment.created_at,
-        writer: commentWriter,
+        writer: {
+          userId: commentWriter.id,
+          nickname: commentWriter.name,
+          level: commentWriter.level,
+        },
       };
 
       commentList.push(commentInfo);
@@ -139,7 +143,11 @@ const getPostDetail = async (postId) => {
       totalComments: comments.length,
       createdAt: postData.created_at,
       comments: commentList,
-      writer: postWriter,
+      writer: {
+        userId: postWriter.id,
+        nickname: postWriter.name,
+        level: postWriter.level,
+      },
     };
 
     return {
