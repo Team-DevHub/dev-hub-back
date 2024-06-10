@@ -154,7 +154,19 @@ const getPostDetail = async (postId) => {
 
 const deletePost = async (userId, postId) => {
   try {
-    await conn.query(postQuery.deletePost, [userId, postId]);
+    // 게시글 작성자 조회
+    const postWriterResult = await conn.query(postQuery.getPostWriter, postId);
+    const postWriterId = postWriterResult[0][0].writer_id;
+
+    // 삭제 권한 확인
+    if (userId !== postWriterId) {
+      throw new CustomError(
+        StatusCodes.FORBIDDEN,
+        "게시글 삭제 권한이 없습니다."
+      );
+    }
+
+    await conn.query(postQuery.deletePost, postId);
 
     // 포인트 차감
     await updatePointsAndLevel(userId, -8);
