@@ -59,8 +59,14 @@ const linksValidation = () =>
   body("links").isArray().withMessage("요청 값이 유효하지 않습니다.");
 
 const postQueryValidation = () => [
-  query("limit").isInt({ min: 1 }).withMessage("요청 값이 유효하지 않습니다."),
-  query("page").isInt({ min: 1 }).withMessage("요청 값이 유효하지 않습니다."),
+  query("limit")
+    .optional()
+    .isInt({ min: 1 })
+    .withMessage("요청 값이 유효하지 않습니다."),
+  query("page")
+    .optional()
+    .isInt({ min: 1 })
+    .withMessage("요청 값이 유효하지 않습니다."),
   query("myPage")
     .optional()
     .isBoolean()

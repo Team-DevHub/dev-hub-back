@@ -38,8 +38,11 @@ const getPosts = async (query, params, countQuery, countParams, page) => {
     const postDataList = result[0];
 
     // 총 게시글 수
-    const countResult = await conn.query(countQuery, countParams);
-    const totalCount = countResult[0][0].total;
+    let totalCount = 0;
+    if (countQuery && countParams) {
+      const countResult = await conn.query(countQuery, countParams);
+      totalCount = countResult[0][0].total;
+    }
 
     if (postDataList.length > 0) {
       const postList = [];
@@ -67,15 +70,20 @@ const getPosts = async (query, params, countQuery, countParams, page) => {
         postList.push(postInfo);
       }
 
-      return {
+      const response = {
         isSuccess: true,
         message: "게시글 조회 성공",
         result: postList,
-        pagination: {
+      };
+
+      if (countQuery && countParams) {
+        response.pagination = {
           currentPage: parseInt(page),
           totalPosts: totalCount,
-        },
-      };
+        };
+      }
+
+      return response;
     } else {
       throw new CustomError(
         StatusCodes.NOT_FOUND,

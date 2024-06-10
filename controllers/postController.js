@@ -62,7 +62,6 @@ const getPosts = [
         }
       }
 
-      const offset = (page - 1) * limit;
       let query = "";
       let params = [];
       let countQuery = postQuery.countQuery;
@@ -103,15 +102,18 @@ const getPosts = [
         countParams.push(parseInt(categoryId));
       }
 
-      // 페이지네이션 적용
-      query += postQuery.limitOffset;
-      params.push(parseInt(limit), offset);
+      // 마이페이지 아닌 경우 페이지네이션 적용
+      if (myPage !== "true") {
+        const offset = (page - 1) * limit;
+        query += postQuery.limitOffset;
+        params.push(parseInt(limit), offset);
+      }
 
       const result = await postService.getPosts(
         query,
         params,
-        countQuery,
-        countParams,
+        myPage !== "true" ? countQuery : null,
+        myPage !== "true" ? countParams : null,
         page
       );
 
