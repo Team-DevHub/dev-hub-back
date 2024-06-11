@@ -102,12 +102,16 @@ const getPosts = [
         countParams.push(parseInt(categoryId));
       }
 
+      query += " ORDER BY created_at DESC";
+
       // 마이페이지 아닌 경우 페이지네이션 적용
       if (myPage !== "true") {
         const offset = (page - 1) * limit;
         query += postQuery.limitOffset;
         params.push(parseInt(limit), offset);
       }
+
+      console.log(query);
 
       const result = await postService.getPosts(
         query,
