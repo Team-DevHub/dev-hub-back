@@ -7,7 +7,7 @@ app.use(cors());
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.send("devhub");
+  res.status(200).send("devhub");
 });
 
 app.listen(process.env.PORT, () => {
