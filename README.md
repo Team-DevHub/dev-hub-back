@@ -75,6 +75,7 @@
 ### **✔️ 로그인 & 회원가입**
 
 - 닉네임, 이메일, 비밀번호를 이용해 회원가입할 수 있습니다.
+
 ![join](https://github.com/Team-DevHub/dev-hub-front/assets/121474189/04c34d27-bdfe-4130-8615-76e1cf744d91)
 
 
