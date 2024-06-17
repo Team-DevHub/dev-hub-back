@@ -135,14 +135,14 @@
 
 <br/>
 
-# 🗃️ ERD (BE repo에만)
+# 🗃️ ERD
 
 [ERD](https://dbdiagram.io/d/DevHub-66435a5d9e85a46d55d10fd1)
 <img width="1087" alt="erd" src="https://github.com/Team-DevHub/dev-hub-back/assets/121474189/247690fc-4de1-475d-bbb7-ae5cf5127f3b">
 
 <br/>
 
-# 📝 API 명세서 (BE repo에만)
+# 📝 API 명세서
 
 [API 명세서](https://www.notion.so/API-9357364134364a28aef0741b7698698d?pvs=21)
 <img width="1129" alt="api" src="https://github.com/Team-DevHub/dev-hub-back/assets/121474189/8127f4a8-60a2-40da-80e6-e71a331a9692">
