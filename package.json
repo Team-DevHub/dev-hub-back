@@ -1,20 +1,28 @@
 {
   "name": "dev-hub-back",
+  "engines": {
+    "node": "20.9.0"
+  },
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon app.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "express-validator": "^7.0.1",
     "http-status-codes": "^2.3.0",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.9.7",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
     "nodemon": "^3.1.0"
   }
 }

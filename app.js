@@ -1,8 +1,18 @@
 require("dotenv").config();
+const cors = require("cors");
 const express = require("express");
 const app = express();
 
-app.listen(process.env.PORT);
+app.use(cors());
+app.use(express.json());
+
+app.get("/", (req, res) => {
+  res.status(200).send("devhub");
+});
+
+app.listen(process.env.PORT, () => {
+  console.log(`Server listening on ${process.env.PORT}...`);
+});
 
 const userRouter = require("./routes/usersRouter");
 const postRouter = require("./routes/postRouter");
