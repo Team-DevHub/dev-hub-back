@@ -178,9 +178,47 @@ const deletePost = [
   },
 ];
 
+// 게시글 수정
+const updatePost = [
+  valid.tokenValidation(),
+  valid.categoryIdValidation(),
+  valid.titleValidation(),
+  valid.contentValidation(),
+  valid.linksValidation(),
+  valid.postIdValidation(),
+  valid.validationCheck,
+  async (req, res) => {
+    const { postId } = req.params;
+    const { categoryId, title, content, links } = req.body;
+
+    try {
+      const token = req.headers["authorization"].split(" ")[1];
+      const verifyResult = verifyAccessToken(token);
+
+      if (verifyResult) {
+        const result = await postService.updatePost(
+          verifyResult.userId,
+          postId,
+          categoryId,
+          title,
+          content,
+          links
+        );
+        res.status(StatusCodes.OK).json(result);
+      }
+    } catch (err) {
+      res.status(err.statusCode || 400).json({
+        isSuccess: false,
+        message: err.message,
+      });
+    }
+  },
+];
+
 module.exports = {
   writePost,
   getPosts,
   getPostDetail,
   deletePost,
+  updatePost,
 };
