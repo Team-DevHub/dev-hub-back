@@ -14,3 +14,5 @@ exports.getUserById = `SELECT * FROM users WHERE id = ?`;
 exports.getLinksByPostId = `SELECT * FROM links WHERE post_id =?`;
 exports.countQuery = `SELECT COUNT(*) AS total FROM posts`;
 exports.getPostWriter = `SELECT writer_id FROM posts WHERE id = ?`;
+exports.updatePost = `UPDATE posts SET category_id = ?, title = ?, content = ? WHERE id = ?`;
+exports.deleteLinks = `DELETE FROM links WHERE post_id = ?`;
