@@ -4,5 +4,6 @@ const authController = require("../controllers/authController");
 
 authRouter.get("/github", authController.getGithubUrl);
 authRouter.post("/github", authController.getGithubCallback);
+authRouter.delete("/github", authController.deleteGithubAccount);
 
 module.exports = authRouter;
