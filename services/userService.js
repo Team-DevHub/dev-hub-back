@@ -145,7 +145,6 @@ const getUser = async (userId) => {
           level: userData.level,
           totalPosts: count,
           totalPoints: userData.points,
-          loginType: userData.login_type,
         },
       };
     } else {
