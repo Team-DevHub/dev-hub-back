@@ -12,3 +12,4 @@ exports.updatePoints = `UPDATE users SET points = points + ? WHERE id = ?`;
 exports.updateLevel = `UPDATE users SET level = ? WHERE id = ?`;
 exports.getPointsById = `SELECT points FROM users WHERE id = ?`;
 exports.checkNickname = `SELECT COUNT(*) as count FROM users WHERE name = ?`;
+exports.getLoginType = `SELECT login_type FROM users WHERE id = ?`;
