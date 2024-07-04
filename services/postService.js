@@ -1,13 +1,11 @@
 require("dotenv").config();
 const conn = require("../database/mysql");
 const postQuery = require("../queries/postQuery");
-const userQuery = require("../queries/userQuery");
 const { StatusCodes } = require("http-status-codes");
 const CustomError = require("../utils/CustomError");
-const { param } = require("express-validator");
 const { getUserInfo } = require("../utils/getUserInfo");
 const { updatePointsAndLevel } = require("../utils/updateLevel");
-const { post } = require("../routes/postRouter");
+const scrapQuery = require("../queries/scrapQuery");
 
 const writePost = async (writerId, categoryId, title, content, links) => {
   let values = [writerId, categoryId, title, content];
@@ -142,6 +140,12 @@ const getPostDetail = async (postId) => {
     // 게시글 작성자
     const postWriter = await getUserInfo(postData.writer_id);
 
+    // 스크랩 여부
+    const { count } = await conn
+      .query(scrapQuery.countScrapById, postId)
+      .then((res) => res[0][0]);
+    const isScrapped = count > 0 ? true : false;
+
     // 게시글 상세 조회
     const postInfo = {
       postId: postData.id,
@@ -150,6 +154,7 @@ const getPostDetail = async (postId) => {
       links: links,
       categoryId: postData.category_id,
       totalComments: comments.length,
+      isScrapped,
       createdAt: postData.created_at,
       comments: commentList,
       writer: {
