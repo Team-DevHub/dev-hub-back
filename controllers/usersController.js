@@ -1,6 +1,5 @@
-const { StatusCodes } = require("http-status-codes"); // status code module
+const { StatusCodes } = require("http-status-codes");
 const userService = require("../services/userService");
-const { verifyAccessToken } = require("../utils/verifyToken");
 const valid = require("../utils/validation");
 const { getUserInfo } = require("../utils/getUserInfo");
 const conn = require("../database/mysql");
@@ -88,17 +87,11 @@ const checkNickname = [
 
 /* ----- 유저 프로필 조회 ----- */
 const getUser = [
-  valid.tokenValidation(),
   valid.validationCheck,
   async (req, res) => {
     try {
-      const token = req.headers["authorization"].split(" ")[1];
-      const verifyResult = verifyAccessToken(token);
-
-      if (verifyResult) {
-        const result = await userService.getUser(verifyResult.userId);
-        res.status(StatusCodes.OK).json(result);
-      }
+      const result = await userService.getUser(req.userId);
+      res.status(StatusCodes.OK).json(result);
     } catch (err) {
       res.status(err.statusCode || 500).json({
         isSuccess: false,
@@ -110,12 +103,10 @@ const getUser = [
 
 /* ----- 회원 탈퇴 ----- */
 const deleteAccount = [
-  valid.tokenValidation(),
   valid.validationCheck,
   async (req, res) => {
     try {
-      const token = req.headers["authorization"].split(" ")[1];
-      const { userId } = verifyAccessToken(token);
+      const userId = req.userId;
 
       const typeResult = await conn.query(userQuery.getLoginType, userId);
       const { login_type } = typeResult[0][0];
