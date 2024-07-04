@@ -1,6 +1,5 @@
 const { StatusCodes } = require("http-status-codes");
 const scrapService = require("../services/scrapService");
-const valid = require("../utils/validation");
 
 const getScrapList = async (req, res) => {
   try {
@@ -14,42 +13,31 @@ const getScrapList = async (req, res) => {
   }
 };
 
-const scrap = [
-  valid.postIdValidation(),
-  valid.validationCheck,
-  async (req, res) => {
-    try {
-      const { postId } = req.params;
-      const result = await scrapService.scrap(req.userId, postId);
-      res.status(StatusCodes.OK).json(result);
-    } catch (err) {
-      res.status(err.statusCode || 500).json({
-        isSuccess: false,
-        message: err.message,
-      });
-    }
-  },
-];
+const scrapController = async (req, res, actionType) => {
+  try {
+    const { postId } = req.params;
+    const userId = req.userId;
 
-const deleteScrap = [
-  valid.postIdValidation(),
-  valid.validationCheck,
-  async (req, res) => {
-    try {
-      const { postId } = req.params;
-      const result = await scrapService.deleteScrap(req.userId, postId);
-      res.status(StatusCodes.OK).json(result);
-    } catch (err) {
-      res.status(err.statusCode || 500).json({
-        isSuccess: false,
-        message: err.message,
-      });
+    let result;
+    if (actionType === "scrap") {
+      result = await scrapService.scrap(userId, postId);
+    } else if (actionType === "delete") {
+      result = await scrapService.deleteScrap(userId, postId);
+    } else {
+      throw new CustomError(StatusCodes.BAD_REQUEST, "Invalid action type");
     }
-  },
-];
+
+    res.status(StatusCodes.OK).json(result);
+  } catch (err) {
+    res.status(err.statusCode || 500).json({
+      isSuccess: false,
+      message: err.message,
+    });
+  }
+};
 
 module.exports = {
   getScrapList,
-  scrap,
-  deleteScrap,
+  scrap: async (req, res) => scrapController(req, res, "scrap"),
+  deleteScrap: async (req, res) => scrapController(req, res, "delete"),
 };
