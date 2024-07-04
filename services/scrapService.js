@@ -58,8 +58,26 @@ const scrap = async (userId, postId) => {
   }
 };
 
-const deleteScrap = (req, res) => {
-  //
+const deleteScrap = async (userId, postId) => {
+  try {
+    const { affectedRows } = await conn
+      .query(scrapQuery.deleteScrap, [userId, postId])
+      .then((res) => res[0]);
+
+    if (affectedRows > 0) {
+      return {
+        isSuccess: true,
+        message: "스크랩 삭제 성공",
+      };
+    } else {
+      return {
+        isSuccess: false,
+        message: "스크랩 삭제 실패",
+      };
+    }
+  } catch (err) {
+    throw err;
+  }
 };
 
 module.exports = {
