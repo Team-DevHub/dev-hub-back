@@ -1,12 +1,11 @@
 require("dotenv").config();
 const conn = require("../database/mysql");
 const postQuery = require("../queries/postQuery");
-const userQuery = require("../queries/userQuery");
 const { StatusCodes } = require("http-status-codes");
 const CustomError = require("../utils/CustomError");
-const { param } = require("express-validator");
 const { getUserInfo } = require("../utils/getUserInfo");
 const { updatePointsAndLevel } = require("../utils/updateLevel");
+const scrapQuery = require("../queries/scrapQuery");
 
 const writePost = async (writerId, categoryId, title, content, links) => {
   let values = [writerId, categoryId, title, content];
@@ -141,6 +140,12 @@ const getPostDetail = async (postId) => {
     // 게시글 작성자
     const postWriter = await getUserInfo(postData.writer_id);
 
+    // 스크랩 여부
+    const { count } = await conn
+      .query(scrapQuery.countScrapById, postId)
+      .then((res) => res[0][0]);
+    const isScrapped = count > 0 ? true : false;
+
     // 게시글 상세 조회
     const postInfo = {
       postId: postData.id,
@@ -149,6 +154,7 @@ const getPostDetail = async (postId) => {
       links: links,
       categoryId: postData.category_id,
       totalComments: comments.length,
+      isScrapped,
       createdAt: postData.created_at,
       comments: commentList,
       writer: {
@@ -196,4 +202,50 @@ const deletePost = async (userId, postId) => {
   }
 };
 
-module.exports = { writePost, getPosts, getPostDetail, deletePost };
+const updatePost = async (
+  userId,
+  postId,
+  categoryId,
+  title,
+  content,
+  links
+) => {
+  try {
+    const postWriterResult = await conn.query(postQuery.getPostWriter, [
+      postId,
+    ]);
+    const postWriterId = postWriterResult[0][0].writer_id;
+
+    if (userId !== postWriterId) {
+      throw new CustomError(
+        StatusCodes.UNAUTHORIZED,
+        "게시글을 수정할 권한이 없습니다."
+      );
+    }
+
+    await conn.query(postQuery.updatePost, [
+      categoryId,
+      title,
+      content,
+      postId,
+    ]);
+
+    // 기존 링크 삭제
+    await conn.query(postQuery.deleteLinks, [postId]);
+
+    // 새 링크 추가
+    if (links && links.length > 0) {
+      const linkValues = links.map((link) => [postId, link]);
+      await conn.query(postQuery.writeLinks, [linkValues]);
+    }
+
+    return {
+      isSuccess: true,
+      message: "게시글 수정 성공",
+    };
+  } catch (err) {
+    throw err;
+  }
+};
+
+module.exports = { writePost, getPosts, getPostDetail, deletePost, updatePost };

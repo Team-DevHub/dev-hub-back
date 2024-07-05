@@ -6,7 +6,6 @@ const { getCommentsFromPost } = require("../utils/getComments");
 
 // 댓글 작성
 const writeComment = [
-  valid.tokenValidation(),
   valid.commentPostIdValidation(),
   valid.contentValidation(),
   valid.validationCheck,
@@ -14,19 +13,14 @@ const writeComment = [
     const { postId, content } = req.body;
 
     try {
-      const token = req.headers["authorization"].split(" ")[1];
-      const verifyResult = verifyAccessToken(token);
+      const writerId = req.userId;
+      const result = await commentService.writeComment(
+        writerId,
+        postId,
+        content
+      );
 
-      if (verifyResult) {
-        const writerId = verifyResult.userId;
-        const result = await commentService.writeComment(
-          writerId,
-          postId,
-          content
-        );
-
-        res.status(StatusCodes.CREATED).json(result);
-      }
+      res.status(StatusCodes.CREATED).json(result);
     } catch (err) {
       res.status(err.StatusCodes || 400).json({
         isSuccess: false,
@@ -38,22 +32,16 @@ const writeComment = [
 
 // 댓글 삭제
 const deleteComment = [
-  valid.tokenValidation(),
   valid.commentIdValidation(),
   valid.validationCheck,
   async (req, res) => {
     const { commentId } = req.body;
 
     try {
-      const token = req.headers["authorization"].split(" ")[1];
-      const verifyResult = verifyAccessToken(token);
+      const writerId = req.userId;
+      const result = await commentService.deleteComment(writerId, commentId);
 
-      if (verifyResult) {
-        const writerId = verifyResult.userId;
-        const result = await commentService.deleteComment(writerId, commentId);
-
-        res.status(StatusCodes.OK).json(result);
-      }
+      res.status(StatusCodes.OK).json(result);
     } catch (err) {
       res.status(err.StatusCodes || 400).json({
         isSuccess: false,

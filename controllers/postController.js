@@ -6,7 +6,6 @@ const postQuery = require("../queries/postQuery");
 
 // 게시글 작성
 const writePost = [
-  valid.tokenValidation(),
   valid.categoryIdValidation(),
   valid.titleValidation(),
   valid.contentValidation(),
@@ -16,21 +15,16 @@ const writePost = [
     const { categoryId, title, content, links } = req.body;
 
     try {
-      const token = req.headers["authorization"].split(" ")[1];
-      const verifyResult = verifyAccessToken(token);
+      const writerId = req.userId;
+      const result = await postService.writePost(
+        writerId,
+        categoryId,
+        title,
+        content,
+        links
+      );
 
-      if (verifyResult) {
-        const writerId = verifyResult.userId;
-        const result = await postService.writePost(
-          writerId,
-          categoryId,
-          title,
-          content,
-          links
-        );
-
-        res.status(StatusCodes.CREATED).json(result);
-      }
+      res.status(StatusCodes.CREATED).json(result);
     } catch (err) {
       res.status(err.StatusCodes || 400).json({
         isSuccess: false,
@@ -152,25 +146,47 @@ const getPostDetail = [
 
 // 게시글 삭제
 const deletePost = [
-  valid.tokenValidation(),
   valid.postIdValidation(),
   valid.validationCheck,
   async (req, res) => {
     const { postId } = req.params;
 
     try {
-      const token = req.headers["authorization"].split(" ")[1];
-      const verifyResult = verifyAccessToken(token);
-
-      if (verifyResult) {
-        const result = await postService.deletePost(
-          verifyResult.userId,
-          postId
-        );
-        res.status(StatusCodes.OK).json(result);
-      }
+      const result = await postService.deletePost(req.userId, postId);
+      res.status(StatusCodes.OK).json(result);
     } catch (err) {
       res.status(err.statusCodes || 400).json({
+        isSuccess: false,
+        message: err.message,
+      });
+    }
+  },
+];
+
+// 게시글 수정
+const updatePost = [
+  valid.categoryIdValidation(),
+  valid.titleValidation(),
+  valid.contentValidation(),
+  valid.linksValidation(),
+  valid.postIdValidation(),
+  valid.validationCheck,
+  async (req, res) => {
+    const { postId } = req.params;
+    const { categoryId, title, content, links } = req.body;
+
+    try {
+      const result = await postService.updatePost(
+        req.userId,
+        postId,
+        categoryId,
+        title,
+        content,
+        links
+      );
+      res.status(StatusCodes.OK).json(result);
+    } catch (err) {
+      res.status(err.statusCode || 400).json({
         isSuccess: false,
         message: err.message,
       });
@@ -183,4 +199,5 @@ module.exports = {
   getPosts,
   getPostDetail,
   deletePost,
+  updatePost,
 };
