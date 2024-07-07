@@ -50,8 +50,61 @@ const deleteGithubAccount = async (req, res) => {
   }
 };
 
+const getGoogleUrl = async (req, res) => {
+  try {
+    const url = URL.google_authorize;
+    const config = {
+      client_id: process.env.GOOGLE_CLIENT_ID,
+      redirect_uri: process.env.GOOGLE_REDIRECT_URI,
+      response_type: "code",
+      scope: "email profile",
+    };
+
+    const params = new URLSearchParams(config).toString();
+    const finalUrl = `${url}?${params}`;
+
+    res.status(StatusCodes.OK).json({ url: finalUrl });
+  } catch (err) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      isSuccess: false,
+      message: err.message,
+    });
+  }
+};
+
+const getGoogleCallback = async (req, res) => {
+  const { code } = req.body;
+
+  if (!code) {
+    return res.status(StatusCodes.BAD_REQUEST).json({
+      isSuccess: false,
+      message: "Authorization code is missing",
+    });
+  }
+
+  const params = {
+    code,
+    client_id: process.env.GOOGLE_CLIENT_ID,
+    client_secret: process.env.GOOGLE_CLIENT_SECRET,
+    redirect_uri: process.env.GOOGLE_REDIRECT_URI,
+    grant_type: "authorization_code",
+  };
+
+  try {
+    const result = await authService.getGoogleCallback(params);
+    res.status(StatusCodes.OK).json(result);
+  } catch (err) {
+    res.status(err.statusCode || 500).json({
+      isSuccess: false,
+      message: err.message,
+    });
+  }
+};
+
 module.exports = {
   getGithubUrl,
   getGithubCallback,
   deleteGithubAccount,
+  getGoogleUrl,
+  getGoogleCallback,
 };

@@ -98,7 +98,54 @@ const deleteGithubAccount = async (userId) => {
   }
 };
 
+const getGoogleCallback = async (params) => {
+  try {
+    const { data: tokenData } = await axios.post(URL.google_token, params, {
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    });
+
+    const { access_token } = tokenData;
+
+    const { data: userInfo } = await axios.get(URL.google_getUser, {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
+
+    const { id, email, name } = userInfo;
+
+    const findResult = await conn.query(userQuery.getUserById, id);
+    const existingUser = findResult[0][0];
+
+    // 유저 확인
+    if (!existingUser) {
+      const pw = getHashPassword(uuidv4());
+
+      const values = [
+        id,
+        name,
+        email,
+        pw.hashPassword,
+        pw.salt,
+        "google",
+        access_token,
+      ];
+      await conn.query(authQuery.googleJoin, values);
+    }
+
+    const token = createAccessToken(id);
+
+    return {
+      isSuccess: true,
+      message: "로그인 성공",
+      userId: id,
+      accessToken: token,
+    };
+  } catch (err) {
+    throw err;
+  }
+};
+
 module.exports = {
   getGithubCallback,
   deleteGithubAccount,
+  getGoogleCallback,
 };
