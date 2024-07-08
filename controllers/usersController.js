@@ -114,6 +114,9 @@ const deleteAccount = [
       if (login_type === "github") {
         const result = await authService.deleteGithubAccount(userId);
         res.status(StatusCodes.OK).json(result);
+      } else if (login_type === "google") {
+        const result = await authService.deleteGoogleAccount(userId);
+        res.status(StatusCodes.OK).json(result);
       } else {
         const result = await userService.deleteAccount(userId);
         res.status(StatusCodes.OK).json(result);
