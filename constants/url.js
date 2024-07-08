@@ -8,7 +8,7 @@ const URL = {
   google_authorize: `https://accounts.google.com/o/oauth2/v2/auth`,
   google_token: "https://oauth2.googleapis.com/token",
   google_getUser: "https://www.googleapis.com/userinfo/v2/me",
-  google_deleteUser: `https://accounts.google.com/o/oauth2/revoke?token`,
+  google_deleteUser: `https://accounts.google.com/o/oauth2/revoke?token=`,
 };
 
 module.exports = URL;

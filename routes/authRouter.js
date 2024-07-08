@@ -9,5 +9,6 @@ authRouter.delete("/github", tokenHandler, authController.deleteGithubAccount);
 
 authRouter.get("/google", authController.getGoogleUrl);
 authRouter.post("/google", authController.getGoogleCallback);
+authRouter.delete("/google", tokenHandler, authController.deleteGoogleAccount);
 
 module.exports = authRouter;

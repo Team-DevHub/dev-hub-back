@@ -101,10 +101,23 @@ const getGoogleCallback = async (req, res) => {
   }
 };
 
+const deleteGoogleAccount = async (req, res) => {
+  try {
+    const result = await authService.deleteGoogleAccount(req.userId);
+    res.status(StatusCodes.OK).json(result);
+  } catch (err) {
+    res.status(err.statusCode || 500).json({
+      isSuccess: false,
+      message: err.message,
+    });
+  }
+};
+
 module.exports = {
   getGithubUrl,
   getGithubCallback,
   deleteGithubAccount,
   getGoogleUrl,
   getGoogleCallback,
+  deleteGoogleAccount,
 };

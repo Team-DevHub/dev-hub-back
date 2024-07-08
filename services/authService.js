@@ -144,8 +144,34 @@ const getGoogleCallback = async (params) => {
   }
 };
 
+const deleteGoogleAccount = async (userId) => {
+  try {
+    const tokenResult = await conn.query(authQuery.getGoogleToken, userId);
+    const { google_token } = tokenResult[0][0];
+
+    const response = await axios.get(`${URL.google_deleteUser}${google_token}`);
+
+    if (response.status === 200) {
+      await conn.query(userQuery.deleteUser, userId);
+
+      return {
+        isSuccess: true,
+        message: "회원 탈퇴 완료",
+      };
+    } else {
+      throw new CustomError(
+        StatusCodes.BAD_REQUEST,
+        "구글 회원 계정 해지 실패"
+      );
+    }
+  } catch (err) {
+    throw err;
+  }
+};
+
 module.exports = {
   getGithubCallback,
   deleteGithubAccount,
   getGoogleCallback,
+  deleteGoogleAccount,
 };
