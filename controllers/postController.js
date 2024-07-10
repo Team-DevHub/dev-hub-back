@@ -131,9 +131,10 @@ const getPostDetail = [
   valid.validationCheck,
   async (req, res) => {
     const { postId } = req.params;
+    const { userId } = req.body;
 
     try {
-      const result = await postService.getPostDetail(postId);
+      const result = await postService.getPostDetail(postId, userId);
       res.status(StatusCodes.OK).json(result);
     } catch (err) {
       res.status(err.statusCode || 400).json({
