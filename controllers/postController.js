@@ -40,11 +40,11 @@ const getPosts = [
   valid.validationCheck,
   async (req, res) => {
     try {
-      const { limit, page, myPage, search, categoryId } = req.query;
+      const { limit, page, myPage, search, categoryId, scrap } = req.query;
       let userId = null;
 
-      // 마이페이지인 경우
-      if (myPage === "true") {
+      // 마이페이지 or 스크랩 리스트 조회인 경우
+      if (myPage === "true" || scrap === "true") {
         const token = req.headers["authorization"]?.split(" ")[1];
 
         if (token) {
@@ -56,12 +56,17 @@ const getPosts = [
         }
       }
 
+      if (scrap === "true") {
+        const result = await postService.getScrapList(userId);
+        return res.status(StatusCodes.OK).json(result);
+      }
+
       let query = "";
       let params = [];
       let countQuery = postQuery.countQuery;
       let countParams = [];
 
-      if (myPage === "true" && userId) {
+      if (myPage === "true") {
         query = postQuery.getPosts;
         params.push(userId);
         countQuery += " WHERE writer_id = ?";
@@ -104,8 +109,6 @@ const getPosts = [
         query += postQuery.limitOffset;
         params.push(parseInt(limit), offset);
       }
-
-      console.log(query);
 
       const result = await postService.getPosts(
         query,
@@ -195,10 +198,35 @@ const updatePost = [
   },
 ];
 
+const scrapController = async (req, res, actionType) => {
+  try {
+    const { postId } = req.params;
+    const userId = req.userId;
+
+    let result;
+    if (actionType === "scrap") {
+      result = await postService.scrap(userId, postId);
+    } else if (actionType === "delete") {
+      result = await postService.deleteScrap(userId, postId);
+    } else {
+      throw new CustomError(StatusCodes.BAD_REQUEST, "Invalid action type");
+    }
+
+    res.status(StatusCodes.OK).json(result);
+  } catch (err) {
+    res.status(err.statusCode || 500).json({
+      isSuccess: false,
+      message: err.message,
+    });
+  }
+};
+
 module.exports = {
   writePost,
   getPosts,
   getPostDetail,
   deletePost,
   updatePost,
+  scrap: async (req, res) => scrapController(req, res, "scrap"),
+  deleteScrap: async (req, res) => scrapController(req, res, "delete"),
 };
