@@ -14,3 +14,4 @@ exports.getPointsById = `SELECT points FROM users WHERE id = ?`;
 exports.checkNickname = `SELECT COUNT(*) as count FROM users WHERE name = ?`;
 exports.getLoginType = `SELECT login_type FROM users WHERE id = ?`;
 exports.insertRefresh = `UPDATE users SET refresh_token = ? WHERE id = ?`;
+exports.getRefresh = `SELECT refresh_token FROM users WHERE id = ?`;
