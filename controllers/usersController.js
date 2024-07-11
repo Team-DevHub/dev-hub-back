@@ -5,6 +5,8 @@ const { getUserInfo } = require("../utils/getUserInfo");
 const conn = require("../database/mysql");
 const userQuery = require("../queries/userQuery");
 const authService = require("../services/authService");
+const { verifyRefreshToken } = require("../utils/verifyToken");
+const jwt = require("jsonwebtoken");
 
 /* ----- 회원가입 ----- */
 const join = [
@@ -185,6 +187,23 @@ const getTopFive = [
   },
 ];
 
+const refresh = async (req, res) => {
+  try {
+    const accessToken = req.headers["authorization"].split(" ")[1];
+    const refreshToken = req.headers["refresh"].split(" ")[1];
+
+    const { userId } = jwt.decode(accessToken);
+    const result = await verifyRefreshToken(refreshToken, userId);
+
+    res.status(StatusCodes.OK).json(result);
+  } catch (err) {
+    res.status(err.statusCode || 500).json({
+      isSuccess: false,
+      message: err.message,
+    });
+  }
+};
+
 module.exports = {
   join,
   login,
@@ -195,4 +214,5 @@ module.exports = {
   getUser,
   getTopFive,
   checkNickname,
+  refresh,
 };

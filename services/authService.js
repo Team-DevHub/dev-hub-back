@@ -5,7 +5,10 @@ const { v4: uuidv4 } = require("uuid");
 const authQuery = require("../queries/authQuery");
 const userQuery = require("../queries/userQuery");
 const { getHashPassword } = require("../utils/getHashPassword");
-const { createAccessToken } = require("../utils/verifyToken");
+const {
+  createAccessToken,
+  createRefreshToken,
+} = require("../utils/verifyToken");
 const URL = require("../constants/url");
 const { StatusCodes } = require("http-status-codes");
 
@@ -53,11 +56,16 @@ const getGithubCallback = async (tokenUrl, data) => {
 
     // 로그인
     const token = createAccessToken(userId);
+    const refresh = createRefreshToken();
+
+    // DB에 RT 저장
+    await conn.query(userQuery.insertRefresh, [refresh, userId]);
 
     return {
       isSuccess: true,
       message: "로그인 성공",
       accessToken: token,
+      refreshToken: refresh,
       userId,
     };
   } catch (err) {

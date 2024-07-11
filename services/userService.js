@@ -4,7 +4,10 @@ const { StatusCodes } = require("http-status-codes");
 const userQuery = require("../queries/userQuery");
 const CustomError = require("../utils/CustomError");
 const { v4: uuidv4 } = require("uuid");
-const { createAccessToken } = require("../utils/verifyToken");
+const {
+  createAccessToken,
+  createRefreshToken,
+} = require("../utils/verifyToken");
 const { getHashPassword } = require("../utils/getHashPassword");
 
 /* ----- 회원가입 ----- */
@@ -55,12 +58,17 @@ const login = async (email, password) => {
 
     // 비밀번호 검증
     if (userData && userData.password == pw.hashPassword) {
-      const token = createAccessToken(userData.id);
+      const access = createAccessToken(userData.id);
+      const refresh = createRefreshToken();
+
+      // DB에 RT 저장
+      await conn.query(userQuery.insertRefresh, [refresh, userData.id]);
 
       return {
         isSuccess: true,
         message: "로그인 성공",
-        accessToken: token,
+        accessToken: access,
+        refreshToken: refresh,
         userId: userData.id,
       };
     } else {
