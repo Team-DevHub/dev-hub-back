@@ -94,7 +94,7 @@ const getPosts = async (query, params, countQuery, countParams, page) => {
   }
 };
 
-const getPostDetail = async (postId) => {
+const getPostDetail = async (postId, userId) => {
   try {
     const postResult = await conn.query(postQuery.getPostById, postId);
     const postData = postResult[0][0];
@@ -141,11 +141,14 @@ const getPostDetail = async (postId) => {
     const postWriter = await getUserInfo(postData.writer_id);
 
     // 스크랩 여부
-    const { count } = await conn
-      .query(scrapQuery.countScrapById, postId)
-      .then((res) => res[0][0]);
-    const isScrapped = count > 0 ? true : false;
+    let isScrapped = null;
+    if (userId) {
+      const { count } = await conn
+        .query(scrapQuery.getScrapCount, [postId, userId])
+        .then((res) => res[0][0]);
 
+      isScrapped = count > 0 ? true : false;
+    }
     // 게시글 상세 조회
     const postInfo = {
       postId: postData.id,
