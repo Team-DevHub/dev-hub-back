@@ -3,6 +3,7 @@ const postService = require("../services/postService");
 const { verifyAccessToken } = require("../utils/verifyToken");
 const valid = require("../utils/validation");
 const postQuery = require("../queries/postQuery");
+const jwt = require("jsonwebtoken");
 
 // 게시글 작성
 const writePost = [
@@ -134,7 +135,12 @@ const getPostDetail = [
   valid.validationCheck,
   async (req, res) => {
     const { postId } = req.params;
-    const { userId } = req.body;
+
+    let userId;
+    if (req.headers["authorization"]) {
+      const accessToken = req.headers["authorization"].split(" ")[1];
+      userId = jwt.decode(accessToken).userId;
+    }
 
     try {
       const result = await postService.getPostDetail(postId, userId);
