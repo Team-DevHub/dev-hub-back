@@ -1,4 +1,4 @@
-const express = require("express"); // express module
+const express = require("express");
 const userRouter = express.Router();
 const userController = require("../controllers/usersController");
 const tokenHandler = require("../utils/tokenHandler");
@@ -12,6 +12,6 @@ userRouter.put("/password", userController.resetPw); // 비밀번호 재설정
 userRouter.delete("/", tokenHandler, userController.deleteAccount); // 회원탈퇴
 userRouter.get("/", tokenHandler, userController.getUser); // 유저 조회
 userRouter.get("/top", userController.getTopFive); // top 5 유저 조회
-userRouter.get("/refresh", userController.refresh); // 토큰 재발급
+userRouter.post("/refresh", userController.refresh); // 토큰 재발급
 
 module.exports = userRouter;
