@@ -187,6 +187,7 @@ const getTopFive = [
   },
 ];
 
+/* ----- 토큰 재발급 ----- */
 const refresh = async (req, res) => {
   try {
     const accessToken = req.headers["authorization"].split(" ")[1];
