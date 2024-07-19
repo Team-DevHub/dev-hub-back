@@ -108,11 +108,11 @@ const deleteGithubAccount = async (userId) => {
 
 const getGoogleCallback = async (tokens) => {
   try {
-    const access_token = tokens.access_token;
+    const google_token = tokens.access_token;
     const refresh_token = tokens.refresh_token ? tokens.refresh_token : null;
 
     const { data: userInfo } = await axios.get(URL.google_getUser, {
-      headers: { Authorization: `Bearer ${access_token}` },
+      headers: { Authorization: `Bearer ${google_token}` },
     });
 
     const { id, email, name } = userInfo;
@@ -131,24 +131,25 @@ const getGoogleCallback = async (tokens) => {
         pw.hashPassword,
         pw.salt,
         "google",
-        access_token,
         refresh_token,
       ];
 
       await conn.query(authQuery.googleJoin, values);
-    } else {
-      // 기존 구글 회원인 경우
-      const updateValues = [access_token, id];
-      await conn.query(authQuery.updateGoogleToken, updateValues);
     }
 
     const token = createAccessToken(id);
+    const refresh = createRefreshToken();
+
+    console.log(refresh);
+
+    await conn.query(userQuery.insertRefresh, [refresh, id]);
 
     return {
       isSuccess: true,
       message: "로그인 성공",
-      userId: id,
       accessToken: token,
+      refreshToken: refresh,
+      userId: id,
     };
   } catch (err) {
     throw err;
@@ -157,15 +158,12 @@ const getGoogleCallback = async (tokens) => {
 
 const deleteGoogleAccount = async (userId) => {
   try {
-    const tokenResult = await conn.query(
-      authQuery.getGoogleRefreshToken,
-      userId
-    );
-    const { refresh_token } = tokenResult[0][0];
+    const tokenResult = await conn.query(authQuery.getGoogleRefreshToken, [
+      userId,
+    ]);
+    const { google_token } = tokenResult[0][0];
 
-    const response = await axios.get(
-      `${URL.google_deleteUser}${refresh_token}`
-    );
+    const response = await axios.get(`${URL.google_deleteUser}${google_token}`);
 
     if (response.status === 200) {
       // db에서 user 삭제
