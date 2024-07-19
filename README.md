@@ -1,7 +1,7 @@
 # 📔 프로젝트 개요
-<img width="1117" alt="landing" src="https://github.com/Team-DevHub/dev-hub-front/assets/121474189/3a249d66-c403-48ae-9f89-6306eeea6dcb">
+<img width="1190" alt="devhub" src="https://github.com/user-attachments/assets/75741e4c-53f4-4f9b-bb34-9f07612bae24">
 
-- **프로젝트 기간**: 2024.04.30 ~ 2024.06.14
+- **프로젝트 기간**: 2024.04.30 ~ 2024.06.14 (1차) / ~2024.07.19 (2차)
 - **Website:** [https://full-devhub.netlify.app/](https://full-devhub.netlify.app/)
 - **Notion:  [데브허브팀 노션](https://www.notion.so/DevHub-17544f3f7c654e18a29aa4a2d7cc4d16?pvs=21)**
 - **Figma**: [데브허브 Figma](https://www.figma.com/design/g1LHrU5G2W8IxmcL2yF2K2/%EB%8D%B0%EB%B8%8C%ED%97%88%EB%B8%8C-(DevHub)-UI?node-id=0-1&t=7UVwKNOJkA0IDVj8-1)
@@ -52,31 +52,37 @@
 ### **✔️ 게시글 상세 모달**
 
 - 게시글을 클릭하면 모달이 등장합니다.
+- 좌측 상단에서 게시글을 스크랩 기능을 사용할 수 있습니다. (비회원은 기능이 제한됩니다.)
 - 좌측에서는 게시글을, 우측에서는 댓글을 확인하거나 작성할 수 있습니다.
+- 해당 게시글 작성자의 경우, 게시글 섹션 오른쪽 하단에 게시글 수정 버튼이 생성됩니다.
 
-![modal](https://github.com/Team-DevHub/dev-hub-front/assets/121474189/a25861dd-8770-49af-8c0f-b8ea850ffe19)
+![modal](https://github.com/user-attachments/assets/374e1649-329d-475f-aef2-b708b93cbc4d)
 
 
-### **✔️ 게시글 작성 페이지**
+### **✔️ 게시글 작성/수정 페이지**
 
 - 제목, 카테고리를 설정할 수 있습니다.
-- 에디터를 이용하여 편리하게 게시글을 작성하고, 미리보기 할 수 있습니다.
+- 에디터를 이용하여 마크다운 형식으로 편리하게 게시글을 작성 및 수정하고, 미리보기 할 수 있습니다.
 
 ![posting](https://github.com/Team-DevHub/dev-hub-front/assets/121474189/3ea189cc-2f75-42ea-8b76-726d357ab97f)
+
 
 ### **✔️ 마이페이지**
 
 - 내 정보, 레벨, 활동 기록을 한 눈에 확인할 수 있습니다.
-- 내가 작성한 게시글 리스트를 모아보고, 삭제할 수 있습니다.
+- 내가 작성한 게시글과 스크랩한 리스트를 모아보고, 삭제할 수 있습니다.
 
-![mypage](https://github.com/Team-DevHub/dev-hub-front/assets/121474189/257ddfcd-b437-4351-9660-6d6d0e3ae4ef)
+![mypage](https://github.com/user-attachments/assets/ff1885d1-f3c8-4865-91cb-2e2b090c542e)
 
 
 ### **✔️ 로그인 & 회원가입**
 
 - 닉네임, 이메일, 비밀번호를 이용해 회원가입할 수 있습니다.
+- 깃허브, 구글 소셜 로그인을 통해 별도의 회원가입없이 간편하게 서비스 이용할 수 있습니다.
 
 ![join](https://github.com/Team-DevHub/dev-hub-front/assets/121474189/04c34d27-bdfe-4130-8615-76e1cf744d91)
+![google](https://github.com/user-attachments/assets/56e0b120-3b3f-4508-96e1-236312ef3370)
+![github](https://github.com/user-attachments/assets/8a9bc551-9c3f-4f7b-9e7e-dcf277e827af)
 
 
 ### **✨ 비회원 플로우**
@@ -84,6 +90,10 @@
 - ‘둘러보기’를 통해 비회원도 서비스를 접해볼 수 있도록 유도했습니다.
 - 비회원은 데브허브 내 공유된 게시글을 둘러볼 수 있지만, ‘지식 공유하기’, ‘댓글 작성’과 같은 주요 기능들에 대한 권한은 제한되어 있습니다.
     - 이에 대한 정보를 팝업이나 placeholder로 안내하여 로그인을 유도하고자 했습니다.
+
+![non-member](https://github.com/user-attachments/assets/a3c103cb-1c6f-471c-bb22-f5f4b9b480b3)
+
+
 
 <br/>
 
@@ -105,12 +115,12 @@
 - **주요 개발 파트**
     - 게시글 API 구현 (게시글 작성, 조회, 삭제 기능)
     - 댓글 API 구현 (댓글 작성, 삭제 기능)
+    - 구글 소셜 로그인 구현
 
 ### 김지민
 - **역할**: FE
 - **주요 개발 파트**
-    
-    로그인, 회원가입, 비밀번호 찾기 페이지 구현
+   - 로그인, 회원가입, 비밀번호 찾기 페이지 구현
     
 
 ### 류지민
@@ -121,29 +131,33 @@
         - 팝업 컴포넌트 구현
         - pagination 기능, 피드백 메일 전송 기능 구현
     - **BE**
+        - Github 소셜 로그인 구현
+        - token refresh API 구현
         - 회원 API 구현 (로그인, 회원가입, 비밀번호 재설정, 프로필 조회 등)
+        - 스크랩 API 구현 (스크랩 추가, 삭제, 조회 기능)
+        - 배포 자동화 (with Github Action)
 
 ### 연하영
 - **역할**: FE
 - **주요 개발 파트**
-    
-    마이페이지, 게시글 모달 구현
-    
-    게시글 작성, 조회, 삭제 기능 구현
-    
-    댓글 작성, 삭제 기능 구현
+   - 마이페이지, 게시글 모달 구현
+   - 게시글 작성, 조회, 수정, 삭제 기능 구현
+   - 댓글 작성, 삭제 기능 구현
+   - 스크랩 추가, 삭제, 스크랩 목록 조회 기능 구현
 
 <br/>
 
 # 🗃️ ERD
 
 [ERD](https://dbdiagram.io/d/DevHub-66435a5d9e85a46d55d10fd1)
-<img width="1087" alt="erd" src="https://github.com/Team-DevHub/dev-hub-back/assets/121474189/247690fc-4de1-475d-bbb7-ae5cf5127f3b">
+<img width="1022" alt="erd" src="https://github.com/user-attachments/assets/cc31434b-bd0e-49fd-8b4d-87d047f06ee2">
+
 
 <br/>
 
 # 📝 API 명세서
 
 [API 명세서](https://www.notion.so/API-9357364134364a28aef0741b7698698d?pvs=21)
-<img width="1129" alt="api" src="https://github.com/Team-DevHub/dev-hub-back/assets/121474189/8127f4a8-60a2-40da-80e6-e71a331a9692">
+<img width="1282" alt="api" src="https://github.com/user-attachments/assets/6a7b0e71-aeeb-4157-89ca-93632f01878f">
+
 
