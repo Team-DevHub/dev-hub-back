@@ -106,13 +106,10 @@ const deleteGithubAccount = async (userId) => {
   }
 };
 
-const getGoogleCallback = async (params) => {
+const getGoogleCallback = async (tokens) => {
   try {
-    const { data: tokenData } = await axios.post(URL.google_token, params, {
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    });
-
-    const { access_token } = tokenData;
+    const access_token = tokens.access_token;
+    const refresh_token = tokens.refresh_token ? tokens.refresh_token : null;
 
     const { data: userInfo } = await axios.get(URL.google_getUser, {
       headers: { Authorization: `Bearer ${access_token}` },
@@ -135,8 +132,14 @@ const getGoogleCallback = async (params) => {
         pw.salt,
         "google",
         access_token,
+        refresh_token,
       ];
+
       await conn.query(authQuery.googleJoin, values);
+    } else {
+      // 기존 구글 회원인 경우
+      const updateValues = [access_token, id];
+      await conn.query(authQuery.updateGoogleToken, updateValues);
     }
 
     const token = createAccessToken(id);
@@ -154,23 +157,26 @@ const getGoogleCallback = async (params) => {
 
 const deleteGoogleAccount = async (userId) => {
   try {
-    const tokenResult = await conn.query(authQuery.getGoogleToken, userId);
-    const { google_token } = tokenResult[0][0];
+    const tokenResult = await conn.query(
+      authQuery.getGoogleRefreshToken,
+      userId
+    );
+    const { refresh_token } = tokenResult[0][0];
 
-    const response = await axios.get(`${URL.google_deleteUser}${google_token}`);
+    const response = await axios.get(
+      `${URL.google_deleteUser}${refresh_token}`
+    );
 
     if (response.status === 200) {
+      // db에서 user 삭제
       await conn.query(userQuery.deleteUser, userId);
 
       return {
         isSuccess: true,
-        message: "회원 탈퇴 완료",
+        message: "구글 회원 탈퇴 완료",
       };
     } else {
-      throw new CustomError(
-        StatusCodes.BAD_REQUEST,
-        "구글 회원 계정 해지 실패"
-      );
+      throw new CustomError(StatusCodes.FORBIDDEN, "구글 회원 탈퇴 실패");
     }
   } catch (err) {
     throw err;
