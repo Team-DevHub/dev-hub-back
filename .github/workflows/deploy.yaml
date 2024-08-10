@@ -1,39 +1,39 @@
-name: deploy-to-EB
+# name: deploy-to-EB
 
-on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+# on:
+#   push:
+#     branches:
+#       - main
+#   workflow_dispatch:
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v2
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: "20.9.0"
+#       - name: Set up Node.js
+#         uses: actions/setup-node@v2
+#         with:
+#           node-version: "20.9.0"
 
-      - name: Install dependencies
-        run: npm install --production
+#       - name: Install dependencies
+#         run: npm install --production
 
-      - name: Bundle application
-        run: |
-          zip -r app.zip . -x "node_modules/*"
+#       - name: Bundle application
+#         run: |
+#           zip -r app.zip . -x "node_modules/*"
 
-      - name: Deploy to EB
-        uses: einaregilsson/beanstalk-deploy@v20
-        with:
-          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          application_name: devhub
-          environment_name: Devhub-env
-          version_label: ${{ github.run_number }}-${{ github.sha }}
-          use_existing_version_if_available: true
-          region: ap-northeast-2
-          deployment_package: ./app.zip
+#       - name: Deploy to EB
+#         uses: einaregilsson/beanstalk-deploy@v20
+#         with:
+#           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#           application_name: devhub
+#           environment_name: Devhub-env
+#           version_label: ${{ github.run_number }}-${{ github.sha }}
+#           use_existing_version_if_available: true
+#           region: ap-northeast-2
+#           deployment_package: ./app.zip
